@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class ListingController extends Controller
 {
     public function __construct()
     {
 
-        $this->authorizeResource(Listing::class, 'listing');
+
     }
 
     /**
@@ -37,10 +38,16 @@ class ListingController extends Controller
     }
 
 
-    public function show(Request $request, Listing $listing)
+    public function show(Request $request, int $id)
     {
 
-        $listing->load('images');
+        $cacheKey = "listing_{$id}";
+
+        $listing = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($id) {
+
+            return Listing::with('images')->findOrFail($id);
+        });
+
         $offer = !$request->user() ? null : $request->user()->offers()->where('listing_id', $listing->id)->first();
 
         return inertia('Listing/Show', compact('listing', 'offer'));
