@@ -24,5 +24,3 @@ Full-stack app with Laravel + MySQL + Inertia js + Vue stack. Real estate auctio
 
 <br />
 
-## 💥Demo (Deployed on VPS Hosting)
-http://laravel-web.site/
